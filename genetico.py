@@ -1,3 +1,4 @@
+from math import ceil
 import sys
 import time
 from parseInput import parseInput
@@ -17,7 +18,17 @@ def selection(P, tournamentSize):
         rivals = [p]
 
         for i in range(tournamentSize-1):
-            rivals.append(P[random.randint(0, len(P)-1)])
+            randomIndex = random.randint(0, len(P)-1)
+            randomCandidate = P[randomIndex]
+
+            if len(randomCandidate['s']) != 300:
+                print(f'randomIndex: {randomIndex}')
+                print(f'randomCandidate: {randomCandidate}')
+                print(f'P[randomIndex]: {P[randomIndex]}')
+                printGeneration(P)
+                quit()
+
+            rivals.append(P[random.randint(1, len(P)-1)])
 
         rivals = sorted(rivals, key=itemgetter('f'), reverse=True)
 
@@ -26,6 +37,7 @@ def selection(P, tournamentSize):
             'p2': rivals[1]
         })
 
+    
     return parents
 
 
@@ -34,10 +46,10 @@ def cross(parents):
     for p in parents:
         p1 = p['p1']['s']
         p2 = p['p2']['s']
-        c1 = p1[:len(p1)//2] + p2[len(p2)//2:]
-        c2 = p2[:len(p2)//2] + p1[len(p1)//2:]
-        C.append({'s': c1, 'f': 0})
-        C.append({'s': c2, 'f': 0})
+        if len(p1) != 300: print(f'p1: {len(p1)}')
+        if len(p2) != 300: print(f'p2: {len(p2)}')
+        c = p1[:len(p1)//2] + p2[len(p2)//2:]
+        C.append({'s': c, 'f': 0})
 
     return C
 
@@ -58,6 +70,10 @@ def evaluation(P, lineasGenoma, th, m):
         P[i]['f'] = getCalidadSolucion(lineasGenoma, P[i]['s'], th)
     return P
 
+def printGeneration(P):
+    for p in P:
+        print(p['s'])
+
 def printParentsFitness(parents):
     for p in parents:
         print(p['p1']['f'], p['p2']['f'])
@@ -75,6 +91,7 @@ def main():
     geneticoLimit = 90
 
     lineasGenoma, m, n = parseInput(fileName)
+    threshold = ceil(th * m)
 
     start = time.time()
 
@@ -83,8 +100,8 @@ def main():
 
     # Generar población inicial a partir del greedy aleatorizado
     for i in range(pSize):
-        # calidad, sol = grasp(m,n,th,lineasGenoma, 0.5)
-        sol,calidad = greedy(m,n,th,lineasGenoma, 0.9)
+        calidad, sol = grasp(m,n,th,lineasGenoma, 0.5)
+        #sol,calidad = greedy(m,n,th,lineasGenoma, 0.9)
         aux = {'s': sol, 'f': calidad}
         P.append(aux)
 
@@ -95,17 +112,14 @@ def main():
     # Cruza
     C = cross(parents)
     # Mutación
-    mutation(C)
+    # mutation(C)
     # Evaluación
-    evaluation(C, lineasGenoma, th, m)
+    evaluation(C, lineasGenoma, threshold, m)
 
     # print(f'Initial population best fitness: {max(P, key=itemgetter("f"))["f"]}')
     # print(f'Children population best fitness: {max(C, key=itemgetter("f"))["f"]}')
 
-    printFitness(P)
-    printFitness(C)
 
-    
 
 
 
