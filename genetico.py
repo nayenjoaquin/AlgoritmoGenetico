@@ -70,6 +70,14 @@ def evaluation(P, lineasGenoma, th, m):
         P[i]['f'] = getCalidadSolucion(lineasGenoma, P[i]['s'], th)
     return P
 
+def replace(P, C):
+    # best 5 solutions from P
+    elite = sorted(P, key=itemgetter('f'), reverse=True)[:5]
+    
+    replacement = sorted(C, key=itemgetter('f'), reverse=True)[:len(P)-5]
+
+    return elite + replacement
+
 def printGeneration(P):
     for p in P:
         print(p['s'])
@@ -86,7 +94,7 @@ def main():
 
     fileName = sys.argv[2]
     th = 0.85
-    pSize = 10
+    pSize = 50
     tournamentSize = 3
     geneticoLimit = 90
 
@@ -100,24 +108,31 @@ def main():
 
     # Generar población inicial a partir del greedy aleatorizado
     for i in range(pSize):
-        calidad, sol = grasp(m,n,th,lineasGenoma, 0.5)
-        #sol,calidad = greedy(m,n,th,lineasGenoma, 0.9)
+        # calidad, sol = grasp(m,n,th,lineasGenoma, 1)
+        sol,calidad = greedy(m,n,th,lineasGenoma, 0.9)
         aux = {'s': sol, 'f': calidad}
         P.append(aux)
 
+    bestFitness = max(P, key=itemgetter('f'))['f']
+    print(f'Initial best fitness: {bestFitness}')
 
-    # while time.time() - start < geneticoLimit:
-    # Seleccionar padres
-    parents = selection(P, tournamentSize)
-    # Cruza
-    C = cross(parents)
-    # Mutación
-    # mutation(C)
-    # Evaluación
-    evaluation(C, lineasGenoma, threshold, m)
+    while time.time() - start < geneticoLimit:
+        # Seleccionar padres
+        parents = selection(P, tournamentSize)
+        # Cruza
+        C = cross(parents)
+        # Mutación
+        mutation(C)
+        # Evaluación
+        evaluation(C, lineasGenoma, threshold, m)
+        # Reemplazo
+        P = replace(P, C)
 
-    # print(f'Initial population best fitness: {max(P, key=itemgetter("f"))["f"]}')
-    # print(f'Children population best fitness: {max(C, key=itemgetter("f"))["f"]}')
+        currentBestFitness = max(P, key=itemgetter('f'))['f']
+        if currentBestFitness > bestFitness:
+            bestFitness = currentBestFitness
+            print(f'New best fitness: {bestFitness} ----> {time.time() - start}s')
+
 
 
 
