@@ -41,16 +41,26 @@ def selection(P, tournamentSize):
     return parents
 
 
-def cross(parents):
+def cross(parents,nPoints=5):
     C = []
-    for p in parents:
-        p1 = p['p1']['s']
-        p2 = p['p2']['s']
-        if len(p1) != 300: print(f'p1: {len(p1)}')
-        if len(p2) != 300: print(f'p2: {len(p2)}')
-        c = p1[:len(p1)//2] + p2[len(p2)//2:]
-        C.append({'s': c, 'f': 0})
+    points = []
+    crossRange = 300 // nPoints
+    for i in range(nPoints):
+        points.append(random.randint(i*crossRange, (i+1)*crossRange))
 
+    for p in parents:
+        child = ''
+        p1Flag = True
+        for i in range(len(p['p1']['s'])):
+            if i in points:
+                p1Flag = not p1Flag
+            if p1Flag:
+                child += p['p1']['s'][i]
+            else:
+                child += p['p2']['s'][i]
+
+        C.append({'s': child, 'f': 0})
+        
     return C
 
 def randomGen(size):
