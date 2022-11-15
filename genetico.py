@@ -66,12 +66,29 @@ def cross(parents,nPoints=5):
 def randomGen(size):
     return ''.join(random.choice(intToChar) for _ in range(size))
 
+"""
 def mutation(C):
     gap = random.randint(0, 5)
     for c in C:
         if random.random() < 0.1:
             pos = random.randint(0, len(c['s'])-gap)
             c['s'] = c['s'][:pos] + randomGen(gap) + c['s'][pos+gap:]
+"""
+
+def mutation(C):
+    #gap = random.randint(0, 5)
+    #for c in C:
+    #    if random.random() < 0.1:
+    #        pos = random.randint(0, len(c['s'])-gap)
+    #        c['s'] = c['s'][:pos] + randomGen(gap) + c['s'][pos+gap:]
+    gap = random.randint(0, 5) #Tamaño del subconjunto
+    cont = 0
+    for c in C: #por cada hijo en C
+        cont = 0
+        if random.random() < 0.1: #si el rand es menor a 0.1 entoncess
+            for cont in range(gap): #repetir gap veces 
+                pos = random.randint(0, len(c['s'])) #pos = posición entre 0 y tam del string
+                c['s'] = c['s'][:pos] + randomGen(1) + c['s'][pos+1:] #introduce un genoma random en la posición al azar de arriba
 
 
 
