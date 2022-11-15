@@ -66,7 +66,7 @@ def cross(parents,nPoints=5):
 def randomGen(size):
     return ''.join(random.choice(intToChar) for _ in range(size))
 
-"""
+
 def mutation(C):
     gap = random.randint(0, 5)
     for c in C:
@@ -89,7 +89,7 @@ def mutation(C):
             for cont in range(gap): #repetir gap veces 
                 pos = random.randint(0, len(c['s'])) #pos = posición entre 0 y tam del string
                 c['s'] = c['s'][:pos] + randomGen(1) + c['s'][pos+1:] #introduce un genoma random en la posición al azar de arriba
-
+"""
 
 
 def evaluation(P, lineasGenoma, th, m):
@@ -120,10 +120,10 @@ def printFitness(P):
 def main():
 
     fileName = sys.argv[2]
-    th = 0.85
-    pSize = 50
-    tournamentSize = 3
-    geneticoLimit = 90
+    th = float(sys.argv[4])#0.85
+    pSize = int(sys.argv[6])#50
+    tournamentSize = int(sys.argv[8])#3
+    geneticoLimit = int(sys.argv[10])#90
 
     lineasGenoma, m, n = parseInput(fileName)
     threshold = ceil(th * m)
@@ -156,6 +156,7 @@ def main():
         P = replace(P, C)
 
         currentBestFitness = max(P, key=itemgetter('f'))['f']
+
         if currentBestFitness > bestFitness:
             bestFitness = currentBestFitness
             print(f'New best fitness: {bestFitness} ----> {time.time() - start}s')
